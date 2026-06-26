@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@playwright/test": "^1.61.1",
+    "@sqlitecloud/drivers": "^1.0.880",
+    "express": "^5.2.1"
+  }
+}

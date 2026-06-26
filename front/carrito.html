@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Patio - Carrito</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+            background: #b4d351;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: #b4d351;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 28px;
+            border-bottom: 2px solid #a0bb47;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #444;
+            flex-shrink: 0;
+        }
+
+        .brand-name {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #222;
+            font-size: 1.1rem;
+            transition: color .2s;
+        }
+
+        .nav-links a:hover {
+            color: #005500;
+        }
+
+        .nav-links a.active {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        #cart-count {
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            padding: 1px 6px;
+            font-size: .75rem;
+            margin-left: 3px;
+            display: none;
+        }
+
+        main {
+            padding: 40px 60px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        .cart-table th {
+            text-align: left;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #111;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #333;
+        }
+
+        .cart-table th:nth-child(2),
+        .cart-table th:nth-child(3) {
+            text-align: center;
+        }
+
+        .cart-table th:last-child {
+            text-align: right;
+        }
+
+        .cart-table td {
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+            font-size: .95rem;
+            color: #111;
+            vertical-align: middle;
+        }
+
+        .cart-table td:nth-child(2) {
+            text-align: center;
+        }
+
+        .cart-table td:nth-child(3) {
+            text-align: center;
+        }
+
+        .cart-table td:last-child {
+            text-align: right;
+        }
+
+        .item-name {
+            font-size: .95rem;
+        }
+
+        /* +|- controls */
+        .qty-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            border: 2px solid #333;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333;
+            font-family: inherit;
+            transition: background .15s;
+        }
+
+        .qty-btn:hover {
+            background: #ddd;
+        }
+
+        .qty-display {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: .9rem;
+            border-left: 1px solid #333;
+            border-right: 1px solid #333;
+            background: white;
+        }
+
+        .remove-btn {
+            background: none;
+            border: 2px solid #333;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: .85rem;
+            color: #333;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .15s, color .15s;
+        }
+
+        .remove-btn:hover {
+            background: #333;
+            color: white;
+        }
+
+        /* Total */
+        .cart-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .total-box {
+            border: 3px solid #111;
+            border-radius: 10px;
+            padding: 14px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #111;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Empty state */
+        .empty-msg {
+            text-align: center;
+            padding: 60px 0;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .empty-msg a {
+            color: #228B22;
+            text-decoration: underline;
+        }
+
+        /* Checkout btn */
+        .checkout-btn {
+            display: block;
+            margin: 24px 0 0 auto;
+            padding: 12px 32px;
+            background: #228B22;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .checkout-btn:hover {
+            background: #1a6b1a;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #228B22;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: .9rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s;
+            font-family: 'Comic Sans MS', cursive;
+        }
+
+        #toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-brand">
+            <img class="logo"
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAQ4Wi2iqKiIYWscDbrSOuEH6lWk_Waxm6cnPZnaOn2FbxN2AAzdq2tdg&s=10"
+                alt="El Patio Vegan logo">
+            <span class="brand-name">Gastronomía vegana</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="menu.html">menú</a></li>
+            <li><a href="carrito.html" class="active">carrito <span id="cart-count"></span></a></li>
+            <li><a href="https://github.com" target="_blank">github</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div id="cart-container"></div>
+    </main>
+
+    <div id="toast"></div>
+
+    <script>
+        function loadCart() {
+            try { return JSON.parse(localStorage.getItem('el-patio-cart') || '{}'); }
+            catch { return {}; }
+        }
+        function saveCart(cart) {
+            localStorage.setItem('el-patio-cart', JSON.stringify(cart));
+        }
+
+        function render() {
+            const cart = loadCart();
+            const ids = Object.keys(cart).filter(id => cart[id].qty > 0);
+            const container = document.getElementById('cart-container');
+            const badge = document.getElementById('cart-count');
+
+            const totalQty = ids.reduce((s, id) => s + cart[id].qty, 0);
+            badge.textContent = totalQty || '';
+            badge.style.display = totalQty > 0 ? 'inline' : 'none';
+
+            if (ids.length === 0) {
+                container.innerHTML = `
+      <div class="empty-msg">
+        Tu carrito está vacío.<br><br>
+        <a href="menu.html">← Volver al menú</a>
+      </div>`;
+                return;
+            }
+
+            const totalPrice = ids.reduce((s, id) => s + cart[id].price * cart[id].qty, 0);
+
+            const rows = ids.map(id => {
+                const item = cart[id];
+                return `
+      <tr>
+        <td class="item-name">${item.name.toLowerCase()}</td>
+        <td>$${item.price.toLocaleString('es-AR')} x${item.qty}</td>
+        <td>
+          <div class="qty-controls">
+            <button class="qty-btn" onclick="changeQty(${id}, -1)">-</button>
+            <span class="qty-display">${item.qty}</span>
+            <button class="qty-btn" onclick="changeQty(${id}, 1)">+</button>
+          </div>
+        </td>
+        <td>
+          $${(item.price * item.qty).toLocaleString('es-AR')}
+          <button class="remove-btn" onclick="removeItem(${id})" title="Eliminar">✕</button>
+        </td>
+      </tr>`;
+            }).join('');
+
+            container.innerHTML = `
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>item</th>
+          <th>unidad</th>
+          <th></th>
+          <th style="text-align:right">total</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="cart-footer">
+      <div>
+        <div class="total-box">Total: $${totalPrice.toLocaleString('es-AR')}</div>
+        <button class="checkout-btn" onclick="checkout()">Finalizar pedido</button>
+      </div>
+    </div>`;
+        }
+
+        function changeQty(id, delta) {
+            const cart = loadCart();
+            if (!cart[id]) return;
+            cart[id].qty += delta;
+            if (cart[id].qty <= 0) delete cart[id];
+            saveCart(cart);
+            render();
+        }
+
+        function removeItem(id) {
+            const cart = loadCart();
+            delete cart[id];
+            saveCart(cart);
+            render();
+        }
+
+        function checkout() {
+            saveCart({});
+            render();
+            showToast('¡Pedido realizado!');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        render();
+    </script>
+</body>
+
+</html>
