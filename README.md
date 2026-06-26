@@ -39,7 +39,7 @@ La plataforma soporta únicamente archivos con extensiones `.sqlite`, `.sqlite3`
 ### 2. Conectar el Backend con la base de datos en SQLite
 La query de ejemplo con `SELECT * FROM <tablename>` causaba un error de sintaxis al ejecutarse junto con el código real. Para eso se tuvo que generar una API Key para que funcionara.
 
-### 3. COnexión de Frontend con Backend
+### 3. Conexión de Frontend con Backend
 Los archivos HTML estaban dentro de una subcarpeta `front/` pero `express.static` apuntaba a la raíz del proyecto. Se resolvió cambiando a `express.static(path.join(__dirname, 'front'))`. También fue necesario migrar el carrito de una variable en memoria (`let cart = {}`) a `localStorage` para que los datos persistieran al navegar entre páginas.
 
 ### 4. Levantar el servidor en Playwright
